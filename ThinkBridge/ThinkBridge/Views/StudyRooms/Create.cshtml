@@ -1,0 +1,98 @@
+﻿@model ThinkBridge.Models.StudyRoom
+
+@{
+    ViewBag.Title = "Start Study Room";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card shadow border-0">
+            <div class="card-body p-4">
+
+                <div class="mb-4">
+                    <h3 class="fw-bold">
+                        <i class="fas fa-video me-2"></i>Start Study Room
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Create a live collaborative learning session for students.
+                    </p>
+                </div>
+
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Room Title</label>
+
+                        @Html.TextBoxFor(m => m.Title,
+                            new
+                            {
+                                @class = "form-control",
+                                placeholder = "Example: Data Structures Revision Session"
+                            })
+
+                        @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Description</label>
+
+                        @Html.TextAreaFor(m => m.Description,
+                            new
+                            {
+                                @class = "form-control",
+                                rows = "4",
+                                placeholder = "Explain what this session is about..."
+                            })
+
+                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Subject</label>
+
+                            @Html.DropDownListFor(m => m.SubjectId,
+                                (SelectList)ViewBag.Subjects,
+                                "Select Subject",
+                                new { @class = "form-select" })
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Topic</label>
+
+                            @Html.DropDownListFor(m => m.TopicId,
+                                (SelectList)ViewBag.Topics,
+                                "Select Topic",
+                                new { @class = "form-select" })
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Once created, other students will be able to join the live study session.
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-video me-2"></i>Start Meeting
+                        </button>
+
+                        <a href="@Url.Action("Index", "StudyRooms")"
+                           class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+}

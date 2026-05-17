@@ -1,0 +1,178 @@
+﻿@model List<ThinkBridge.Models.CourseMaterial>
+@using ThinkBridge.Models.ViewModels
+
+@{
+    ViewBag.Title = "Course Materials";
+
+    var subjects = ViewBag.Subjects as List<ThinkBridge.Models.Subject> ?? new List<ThinkBridge.Models.Subject>();
+    var topics = ViewBag.Topics as List<ThinkBridge.Models.Topic> ?? new List<ThinkBridge.Models.Topic>();
+
+    var selectedSubjectId = ViewBag.SelectedSubjectId as int?;
+    var selectedTopicId = ViewBag.SelectedTopicId as int?;
+
+    var dynamicResources = ViewBag.DynamicResources as List<ResourceLinkViewModel>
+        ?? new List<ResourceLinkViewModel>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4><i class="fas fa-file-alt me-2"></i>Course Materials</h4>
+
+    @if (Session["Role"] != null && Session["Role"].ToString() == "Lecturer")
+    {
+        <a href="@Url.Action("Create", "CourseMaterials")" class="btn btn-primary">
+            <i class="fas fa-upload me-2"></i>Upload Material
+        </a>
+    }
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" action="@Url.Action("Index", "CourseMaterials")" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Subject</label>
+                <select id="subjectSelect" name="subjectId" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Subjects</option>
+                    @foreach (var subject in subjects)
+                    {
+                        <option value="@subject.Id" @(selectedSubjectId == subject.Id ? "selected" : "")>
+                            @subject.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Topic</label>
+                <select id="topicSelect" name="topicId" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Topics</option>
+                    @foreach (var topic in topics)
+                    {
+                        <option value="@topic.Id" @(selectedTopicId == topic.Id ? "selected" : "")>
+                            @topic.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <a href="@Url.Action("Index", "CourseMaterials")" class="btn btn-outline-secondary w-100">
+                    Clear Filters
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (dynamicResources.Any())
+{
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>
+                <i class="fas fa-globe me-2"></i>
+                Internet Learning Resources
+            </h5>
+
+            <small class="text-muted">
+                Generated from your selected subject/topic filters.
+            </small>
+        </div>
+
+        <div class="row">
+            @foreach (var item in dynamicResources)
+            {
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="card shadow-sm h-100 border-0">
+                        <div class="card-body">
+                            <span class="badge bg-primary mb-2">@item.Type</span>
+
+                            <h6 class="fw-bold">@item.Title</h6>
+
+                            <p class="text-muted small">
+                                Open external learning resources based on the selected subject/topic.
+                            </p>
+
+                            <a href="@item.Url"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="btn btn-sm btn-primary">
+                                <i class="fas fa-external-link-alt me-1"></i>
+                                Open Resource
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="mb-3">
+    <h5>
+        <i class="fas fa-folder-open me-2"></i>
+        Uploaded Course Materials
+    </h5>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        @foreach (var material in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3">
+                                <i class="fas @(material.FileType == "PDF" ? "fa-file-pdf" : material.FileType == "DOCX" || material.FileType == "DOC" ? "fa-file-word" : "fa-file-alt") fa-2x"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="card-title mb-1">@material.Title</h6>
+                                <small class="text-muted">@material.FileType</small>
+                            </div>
+                        </div>
+
+                        <p class="card-text text-muted small">@material.Description</p>
+
+                        <div class="mb-2">
+                            <span class="badge bg-secondary me-1">
+                                @(material.Subject != null ? material.Subject.Name : "No Subject")
+                            </span>
+
+                            <span class="badge bg-light text-dark">
+                                @(material.Topic != null ? material.Topic.Name : "No Topic")
+                            </span>
+                        </div>
+
+                        <small class="text-muted d-block mb-3">
+                            <i class="fas fa-calendar me-1"></i>
+                            @material.UploadDate.ToString("MMM dd, yyyy")
+                        </small>
+
+                        <div class="d-flex gap-2">
+                            <a href="@Url.Action("Details", "CourseMaterials", new { id = material.Id })" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+
+                            <a href="@Url.Action("Download", "CourseMaterials", new { id = material.Id })" class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-download me-1"></i>Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5 text-muted">
+        <i class="fas fa-file-alt fa-3x mb-3"></i>
+        <h5>No uploaded materials found</h5>
+
+        @if (Session["Role"] != null && Session["Role"].ToString() == "Lecturer")
+        {
+            <p>Upload your first course material.</p>
+        }
+    </div>
+}

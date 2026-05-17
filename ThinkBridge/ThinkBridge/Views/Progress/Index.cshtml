@@ -1,0 +1,215 @@
+﻿@model ThinkBridge.ViewModels.ProgressViewModel
+@{
+    ViewBag.Title = "My Progress";
+}
+
+<h4 class="mb-4"><i class="fas fa-chart-bar me-2"></i>My Progress</h4>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm p-4 d-flex align-items-center gap-3">
+            <div class="bg-success bg-opacity-10 text-success rounded-3 p-3">
+                <i class="fas fa-check-circle fa-2x"></i>
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold">@Model.CompletedLessons</h3>
+                <small class="text-muted">Lessons Completed</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm p-4 d-flex align-items-center gap-3">
+            <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3">
+                <i class="fas fa-question-circle fa-2x"></i>
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold">@Model.TotalQuizzes</h3>
+                <small class="text-muted">Quizzes Taken</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm p-4 d-flex align-items-center gap-3">
+            <div class="bg-info bg-opacity-10 text-info rounded-3 p-3">
+                <i class="fas fa-percentage fa-2x"></i>
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold">@Model.AverageScore.ToString("F1")%</h3>
+                <small class="text-muted">Average Score</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm p-4 d-flex align-items-center gap-3">
+            <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-3">
+                <i class="fas fa-trophy fa-2x"></i>
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold">@Model.BestScore.ToString("F1")%</h3>
+                <small class="text-muted">Best Score</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>Overall Progress</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Course Completion</span>
+                    <strong>@Model.OverallProgress.ToString("F1")%</strong>
+                </div>
+                <div class="progress mb-3" style="height: 20px;">
+                    <div class="progress-bar bg-primary" style="width: @Model.OverallProgress%"></div>
+                </div>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="text-success fw-bold">@Model.BestScore.ToString("F0")%</div>
+                        <small class="text-muted">Best</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-warning fw-bold">@Model.AverageScore.ToString("F0")%</div>
+                        <small class="text-muted">Average</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-danger fw-bold">@Model.LowestScore.ToString("F0")%</div>
+                        <small class="text-muted">Lowest</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Topics Needing Revision</h6>
+            </div>
+            <div class="card-body">
+                @if (Model.TopicsNeedingRevision.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var topic in Model.TopicsNeedingRevision)
+                        {
+                            <div class="list-group-item px-0 py-2 border-0 border-bottom d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>@topic.TopicName</strong>
+                                    <small class="text-muted d-block">@topic.SubjectName</small>
+                                </div>
+                                <span class="badge bg-danger">@topic.WrongCount wrong</span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                        <p class="mb-0">No weak areas detected!</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.WeakAreas.Any())
+{
+    <h5 class="mb-3"><i class="fas fa-brain me-2"></i>Weak Areas Detail</h5>
+    <div class="row mb-4">
+        @foreach (var area in Model.WeakAreas)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card shadow-sm border-danger">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title mb-0">@area.TopicName</h6>
+                            <span class="badge bg-danger">@area.WrongCount wrong</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-danger" style="width: @(Math.Min(area.WrongCount * 20, 100))%"></div>
+                        </div>
+                        @if (area.SuggestedMaterials.Any())
+                        {
+                            <div class="mb-2">
+                                <small class="text-muted">Materials:</small>
+                                <div>
+                                    @foreach (var mat in area.SuggestedMaterials.Take(3))
+                                    {
+                                        <span class="badge bg-warning text-dark me-1">@mat</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        @if (area.SuggestedVideos.Any())
+                        {
+                            <div>
+                                <small class="text-muted">Videos:</small>
+                                <div>
+                                    @foreach (var vid in area.SuggestedVideos.Take(3))
+                                    {
+                                        <span class="badge bg-info me-1">@vid</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<h5 class="mb-3"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        @if (Model.RecentActivity.Any())
+        {
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Activity</th>
+                        <th>Type</th>
+                        <th>Score</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var activity in Model.RecentActivity)
+                    {
+                        <tr>
+                            <td>@activity.ActivityName</td>
+                            <td>
+                                <span class="badge @(activity.ActivityType == "Quiz" ? "bg-warning" : activity.ActivityType == "Lesson" ? "bg-success" : "bg-info")">
+                                    @activity.ActivityType
+                                </span>
+                            </td>
+                            <td>
+                                @if (activity.Score.HasValue)
+                                {
+                                    <span class="badge @(activity.Score >= 70 ? "bg-success" : "bg-danger")">@activity.Score%</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td class="text-muted">@activity.CompletedAt.ToString("g")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-history fa-3x mb-3"></i>
+                <h5>No activity yet</h5>
+                <p>Start learning to track your progress!</p>
+            </div>
+        }
+    </div>
+</div>

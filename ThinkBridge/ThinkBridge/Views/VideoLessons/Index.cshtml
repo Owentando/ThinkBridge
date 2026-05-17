@@ -1,0 +1,204 @@
+﻿@model List<ThinkBridge.Models.VideoLesson>
+@using ThinkBridge.Models.ViewModels
+
+@{
+    ViewBag.Title = "Video Lessons";
+
+    var subjects = ViewBag.Subjects as List<ThinkBridge.Models.Subject> ?? new List<ThinkBridge.Models.Subject>();
+    var topics = ViewBag.Topics as List<ThinkBridge.Models.Topic> ?? new List<ThinkBridge.Models.Topic>();
+
+    var selectedSubjectId = ViewBag.SelectedSubjectId as int?;
+    var selectedTopicId = ViewBag.SelectedTopicId as int?;
+
+    var dynamicVideos = ViewBag.DynamicVideoResources as List<ResourceLinkViewModel>
+        ?? new List<ResourceLinkViewModel>();
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4><i class="fas fa-video me-2"></i>Video Lessons</h4>
+
+    @if (Session["Role"] != null && Session["Role"].ToString() == "Lecturer")
+    {
+        <a href="@Url.Action("Create", "VideoLessons")" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add Video
+        </a>
+    }
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" action="@Url.Action("Index", "VideoLessons")" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Subject</label>
+                <select name="subjectId" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Subjects</option>
+                    @foreach (var subject in subjects)
+                    {
+                        <option value="@subject.Id" @(selectedSubjectId == subject.Id ? "selected" : "")>
+                            @subject.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Topic</label>
+                <select name="topicId" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Topics</option>
+                    @foreach (var topic in topics)
+                    {
+                        <option value="@topic.Id" @(selectedTopicId == topic.Id ? "selected" : "")>
+                            @topic.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <a href="@Url.Action("Index", "VideoLessons")" class="btn btn-outline-secondary w-100">
+                    Clear Filters
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (dynamicVideos.Any())
+{
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>
+                <i class="fab fa-youtube me-2 text-danger"></i>
+                Online Video Resources
+            </h5>
+
+            <small class="text-muted">
+                Generated from your selected subject/topic filters.
+            </small>
+        </div>
+
+        <div class="row">
+            @foreach (var item in dynamicVideos)
+            {
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="card shadow-sm h-100 border-0">
+                        <div class="card-body">
+                            <span class="badge bg-danger mb-2">@item.Type</span>
+
+                            <h6 class="fw-bold">@item.Title</h6>
+
+                            <p class="text-muted small">
+                                Open external video lessons based on the selected subject/topic.
+                            </p>
+
+                            <a href="@item.Url"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="btn btn-sm btn-danger">
+                                <i class="fas fa-play me-1"></i>
+                                Open Videos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="mb-3">
+    <h5>
+        <i class="fas fa-video me-2"></i>
+        Uploaded Video Lessons
+    </h5>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        @foreach (var video in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="position-relative">
+                        <div class="bg-dark rounded-top d-flex align-items-center justify-content-center" style="height: 180px;">
+                            <i class="fas fa-play-circle fa-4x text-white opacity-75"></i>
+                        </div>
+
+                        <span class="badge bg-dark position-absolute bottom-0 end-0 m-2">
+                            <i class="fas fa-clock me-1"></i>Video
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <h6 class="card-title mb-2">@video.Title</h6>
+
+                        <p class="card-text text-muted small mb-3">
+                            @video.Description
+                        </p>
+
+                        <div class="mb-3">
+                            <span class="badge bg-secondary me-1">
+                                @(video.Subject != null ? video.Subject.Name : "No Subject")
+                            </span>
+
+                            <span class="badge bg-light text-dark">
+                                @(video.Topic != null ? video.Topic.Name : "No Topic")
+                            </span>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a href="@Url.Action("Watch", "VideoLessons", new { id = video.Id })" class="btn btn-sm btn-primary">
+                                <i class="fas fa-play me-1"></i>Watch
+                            </a>
+
+                            @if (Session["Role"] != null && Session["Role"].ToString() == "Student")
+                            {
+                                <button class="btn btn-sm btn-outline-success"
+                                        onclick="saveOffline('Video', @video.Id, '@HttpUtility.JavaScriptStringEncode(video.Title)')">
+                                    <i class="fas fa-download me-1"></i>Save Offline
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5 text-muted">
+        <i class="fas fa-video-slash fa-3x mb-3"></i>
+        <h5>No uploaded video lessons found</h5>
+
+        @if (Session["Role"] != null && Session["Role"].ToString() == "Lecturer")
+        {
+            <p>Add your first video lesson.</p>
+        }
+    </div>
+}
+
+@section scripts {
+    <script>
+        function saveOffline(itemType, itemId, title) {
+            $.post('@Url.Action("Save", "Offline")', {
+                itemType: itemType,
+                itemId: itemId,
+                title: title,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            }, function (data) {
+                if (data.success) {
+                    alert('Saved for offline study!');
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,94 @@
+﻿@model ThinkBridge.Models.Quiz
+@{
+    ViewBag.Title = Model.Title;
+    var questions = ViewBag.Questions as List<ThinkBridge.Models.QuizQuestion>;
+    var questionCount = (int)ViewBag.QuestionCount;
+    var role = Session["Role"] != null ? Session["Role"].ToString() : "";
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Quizzes")">AI Quizzes</a></li>
+            <li class="breadcrumb-item active">@Model.Title</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h3 class="mb-2">@Model.Title</h3>
+                <p class="text-muted mb-2">@Model.Description</p>
+
+                <div class="mb-2">
+                    <span class="badge bg-secondary me-1">@(Model.Subject != null ? Model.Subject.Name : "No Subject")</span>
+                    <span class="badge bg-light text-dark">@(Model.Topic != null ? Model.Topic.Name : "No Topic")</span>
+                    <span class="badge bg-primary">@questionCount Questions</span>
+                </div>
+
+                <small class="text-muted">
+                    <i class="fas fa-calendar me-1"></i>Created: @Model.CreatedAt.ToString("MMM dd, yyyy")
+                </small>
+            </div>
+
+            @if (role == "Student" || role == "Lecturer")
+            {
+                <a href="@Url.Action("Take", "Quizzes", new { id = Model.Id })" class="btn btn-success btn-lg">
+                    <i class="fas fa-play me-2"></i>Take Quiz
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+@if (questions != null && questions.Any())
+{
+    <h5 class="mb-3"><i class="fas fa-list-ol me-2"></i>Preview Questions</h5>
+
+    <div class="row">
+        @foreach (var question in questions)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">@question.QuestionText</h6>
+
+                        <div class="list-group list-group-flush">
+                            @foreach (var option in question.Options)
+                            {
+                                <div class="list-group-item px-0 py-2 border-0 text-muted">
+                                    <i class="far fa-circle me-2"></i>
+                                    @option.OptionText
+                                </div>
+                            }
+                        </div>
+
+                        @if (role == "Admin")
+                        {
+                            var correctOption = question.Options.FirstOrDefault(o => o.Id == question.CorrectOptionId);
+
+                            if (correctOption != null)
+                            {
+                                <div class="alert alert-success mt-3 mb-0 py-2">
+                                    <strong>Correct:</strong> @correctOption.OptionText
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5 text-muted">
+            <i class="fas fa-question-circle fa-3x mb-3"></i>
+            <h5>No questions yet</h5>
+            <p>This quiz has no generated questions.</p>
+        </div>
+    </div>
+}

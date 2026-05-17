@@ -1,0 +1,93 @@
+﻿@model List<ThinkBridge.Models.PersonalNote>
+@{
+    ViewBag.Title = "My Notes";
+    var keywords = TempData["Keywords"] as string;
+    var suggestedTopics = TempData["SuggestedTopics"] as List<ThinkBridge.Models.Topic>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4><i class="fas fa-sticky-note me-2"></i>My Notes</h4>
+    <a href="@Url.Action("Create", "Notes")" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Create Note
+    </a>
+</div>
+
+@if (!string.IsNullOrEmpty(keywords))
+{
+    <div class="alert alert-info mb-4">
+        <i class="fas fa-lightbulb me-2"></i>
+        <strong>Keywords detected:</strong> @keywords
+        @if (suggestedTopics != null && suggestedTopics.Any())
+        {
+            <div class="mt-2">
+                <strong>Suggested topics:</strong>
+                @foreach (var topic in suggestedTopics)
+                {
+                    <a href="@Url.Action("Index", "CourseMaterials", new { topicId = topic.Id })" class="badge bg-primary me-1">@topic.Name</a>
+                }
+            </div>
+        }
+    </div>
+}
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var note in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title mb-0">@note.Title</h6>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-link text-muted" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="@Url.Action("Edit", "Notes", new { id = note.Id })"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                    <li><a class="dropdown-item" href="@Url.Action("Suggestions", "Notes", new { id = note.Id })"><i class="fas fa-lightbulb me-2"></i>Suggestions</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        @using (Html.BeginForm("Delete", "Notes", new { id = note.Id }, FormMethod.Post, new { style = "display:inline", onsubmit = "return confirm('Delete this note?');" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item text-danger"><i class="fas fa-trash me-2"></i>Delete</button>
+                                        }
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                            @note.Content
+                        </p>
+                        <div class="mb-2">
+                            @if (note.Topic != null)
+                            {
+                                <span class="badge bg-secondary">@note.Topic.Name</span>
+                            }
+                        </div>
+                        <small class="text-muted d-block">
+                            <i class="fas fa-calendar me-1"></i>@note.CreatedAt.ToString("MMM dd, yyyy")
+                            @if (note.UpdatedAt.HasValue)
+                            {
+                                <span class="ms-2"><i class="fas fa-edit me-1"></i>Updated @note.UpdatedAt.Value.ToString("MMM dd")</span>
+                            }
+                        </small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5 text-muted">
+        <i class="fas fa-sticky-note fa-3x mb-3"></i>
+        <h5>No notes yet</h5>
+        <p>Create your first note to start organizing your study materials.</p>
+        <a href="@Url.Action("Create", "Notes")" class="btn btn-primary mt-2">
+            <i class="fas fa-plus me-2"></i>Create Note
+        </a>
+    </div>
+}

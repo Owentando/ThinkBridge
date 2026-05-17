@@ -1,0 +1,175 @@
+﻿@model List<ThinkBridge.Models.Topic>
+@{
+    ViewBag.Title = "Note Suggestions";
+    var note = ViewBag.Note as ThinkBridge.Models.PersonalNote;
+    var keywords = ViewBag.Keywords as List<string>;
+    var suggestedMaterials = ViewBag.SuggestedMaterials as List<ThinkBridge.Models.CourseMaterial>;
+    var suggestedVideos = ViewBag.SuggestedVideos as List<ThinkBridge.Models.VideoLesson>;
+
+    var createdSummaryId = TempData["CreatedSummaryId"];
+    var createdQuizId = TempData["CreatedQuizId"];
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Notes")">My Notes</a></li>
+            <li class="breadcrumb-item active">AI Suggestions</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h4 class="mb-2">@note.Title</h4>
+        <p class="text-muted small mb-3 pre-wrap">@note.Content</p>
+
+        <div class="mb-3">
+            <strong>Detected Keywords:</strong>
+            @if (keywords != null && keywords.Any())
+            {
+                foreach (var keyword in keywords)
+                {
+                    <span class="badge bg-info me-1">@keyword</span>
+                }
+            }
+            else
+            {
+                <span class="text-muted">No keywords detected.</span>
+            }
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            @if (createdSummaryId != null)
+            {
+                <a href="@Url.Action("Details", "AiSummary", new { id = createdSummaryId })" class="btn btn-success btn-sm">
+                    <i class="fas fa-file-alt me-1"></i>View AI Summary
+                </a>
+            }
+
+            @if (createdQuizId != null)
+            {
+                <a href="@Url.Action("Take", "Quizzes", new { id = createdQuizId })" class="btn btn-warning btn-sm">
+                    <i class="fas fa-brain me-1"></i>Take Generated Quiz
+                </a>
+            }
+
+            <a href="@Url.Action("Index", "AiTutor")" class="btn btn-danger btn-sm">
+                <i class="fas fa-robot me-1"></i>Ask AI Tutor
+            </a>
+
+            <a href="@Url.Action("Create", "StudyPlanner")" class="btn btn-primary btn-sm">
+                <i class="fas fa-calendar-alt me-1"></i>Create Study Plan
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <h5 class="mb-3"><i class="fas fa-lightbulb me-2"></i>Related Topics</h5>
+
+    <div class="row mb-4">
+        @foreach (var topic in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">@topic.Name</h6>
+                        <p class="card-text text-muted small">@topic.Description</p>
+
+                        @if (topic.Subject != null)
+                        {
+                            <span class="badge bg-secondary">@topic.Subject.Name</span>
+                        }
+
+                        <div class="mt-3 d-flex gap-2 flex-wrap">
+                            <a href="@Url.Action("Index", "CourseMaterials", new { topicId = topic.Id })" class="btn btn-sm btn-outline-primary">
+                                Resources
+                            </a>
+                            <a href="@Url.Action("Index", "VideoLessons", new { topicId = topic.Id })" class="btn btn-sm btn-outline-info">
+                                Videos
+                            </a>
+                            <a href="@Url.Action("Index", "Quizzes", new { topicId = topic.Id })" class="btn btn-sm btn-outline-warning">
+                                Quizzes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (suggestedMaterials != null && suggestedMaterials.Any())
+{
+    <h5 class="mb-3"><i class="fas fa-link me-2"></i>Related Resources</h5>
+
+    <div class="row mb-4">
+        @foreach (var material in suggestedMaterials)
+        {
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="fas fa-link text-primary"></i>
+                            <h6 class="card-title mb-0">@material.Title</h6>
+                        </div>
+
+                        <p class="card-text text-muted small">@material.Description</p>
+
+                        <a href="@Url.Action("Details", "CourseMaterials", new { id = material.Id })" class="btn btn-sm btn-outline-primary">
+                            Open Resource
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (suggestedVideos != null && suggestedVideos.Any())
+{
+    <h5 class="mb-3"><i class="fas fa-video me-2"></i>Suggested Videos</h5>
+
+    <div class="row mb-4">
+        @foreach (var video in suggestedVideos)
+        {
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="fas fa-video text-danger"></i>
+                            <h6 class="card-title mb-0">@video.Title</h6>
+                        </div>
+
+                        <p class="card-text text-muted small">@video.Description</p>
+
+                        <a href="@Url.Action("Watch", "VideoLessons", new { id = video.Id })" class="btn btn-sm btn-outline-danger">
+                            Watch
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if ((Model == null || !Model.Any())
+    && (suggestedMaterials == null || !suggestedMaterials.Any())
+    && (suggestedVideos == null || !suggestedVideos.Any()))
+{
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5 text-muted">
+            <i class="fas fa-search fa-3x mb-3"></i>
+            <h5>No related content found</h5>
+            <p>Try adding more specific subject terms to your note.</p>
+        </div>
+    </div>
+}
+
+<div class="mt-4">
+    <a href="@Url.Action("Index", "Notes")" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Notes
+    </a>
+</div>

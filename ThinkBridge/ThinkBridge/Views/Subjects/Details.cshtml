@@ -1,0 +1,92 @@
+﻿@model ThinkBridge.Models.Subject
+@{
+    ViewBag.Title = Model.Name;
+    var topics = ViewBag.Topics as List<ThinkBridge.Models.Topic>;
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Subjects")">Subjects</a></li>
+            <li class="breadcrumb-item active">@Model.Name</li>
+        </ol>
+    </nav>
+</div>
+<div class="mb-4 d-flex gap-2 flex-wrap">
+    <a href="@Url.Action("Create", "Notes", new { subjectId = Model.Id })" class="btn btn-primary">
+        <i class="fas fa-upload me-2"></i>Upload Notes
+    </a>
+
+    <a href="@Url.Action("Index", "Notes", new { subjectId = Model.Id })" class="btn btn-outline-primary">
+        <i class="fas fa-sticky-note me-2"></i>View Notes
+    </a>
+</div>
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h3 class="mb-2">@Model.Name</h3>
+                <p class="text-muted mb-2">@Model.Description</p>
+                <small class="text-muted">
+                    <i class="fas fa-chalkboard-teacher me-1"></i>Lecturer: @(Model.Lecturer.FullName ?? "Unknown")
+                </small>
+            </div>
+            @if (Session["Role"].ToString() == "Lecturer")
+            {
+                <a href="@Url.Action("Create", "Topics", new { subjectId = Model.Id })" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add Topic
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<h5 class="mb-3"><i class="fas fa-list me-2"></i>Topics</h5>
+
+@if (topics != null && topics.Any())
+{
+    <div class="row">
+        @foreach (var topic in topics)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-title">@topic.Name</h6>
+                        <p class="card-text text-muted small">@topic.Description</p>
+                        <div class="d-flex gap-2">
+                            <a href="@Url.Action("Index", "CourseMaterials", new { topicId = topic.Id })" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-file-alt me-1"></i>Materials
+                            </a>
+                            <a href="@Url.Action("Index", "VideoLessons", new { topicId = topic.Id })" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-video me-1"></i>Videos
+                            </a>
+                            <a href="@Url.Action("Index", "Quizzes", new { topicId = topic.Id })" class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-question-circle me-1"></i>Quizzes
+                            </a>
+                            <a href="@Url.Action("Create", "Notes", new { subjectId = Model.Id })" class="btn btn-primary">
+                                <i class="fas fa-upload me-2"></i>Upload Notes
+                            </a>
+
+                            <a href="@Url.Action("Index", "Notes", new { subjectId = Model.Id })" class="btn btn-outline-primary">
+                                <i class="fas fa-sticky-note me-2"></i>View Subject Notes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5 text-muted">
+            <i class="fas fa-list fa-3x mb-3"></i>
+            <h5>No topics yet</h5>
+            @if (Session["Role"].ToString() == "Lecturer")
+            {
+                <p>Add topics to organize your course content.</p>
+            }
+        </div>
+    </div>
+}

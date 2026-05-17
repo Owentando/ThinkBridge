@@ -1,0 +1,139 @@
+﻿@model ThinkBridge.Models.PersonalNote
+@{
+    ViewBag.Title = "Create Note";
+    var topics = ViewBag.Topics as List<ThinkBridge.Models.Topic>;
+}
+@Html.HiddenFor(m => m.SubjectId)
+@if (Model.SubjectId.HasValue)
+{
+    <div class="alert alert-info">
+        Notes will be saved under this subject.
+    </div>
+}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-plus me-2"></i>Create New Note</h5>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("Create", "Notes", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Title, new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.Title, new { @class = "form-control", placeholder = "Enter note title" })
+                        @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Link to Topic (Optional)</label>
+                        <select name="TopicId" class="form-select">
+                            <option value="">No specific topic</option>
+                            @foreach (var topic in topics)
+                            {
+                                <option value="@topic.Id">@topic.Name (@topic.Subject.Name)</option>
+                            }
+                        </select>
+                    </div>
+                    @Html.HiddenFor(m => m.SubjectId)
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Upload Notes File Optional</label>
+
+                <input type="file"
+                       name="uploadedFile"
+                       id="uploadedFile"
+                       accept=".txt,text/plain"
+                       style="display:none;" />
+
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button"
+                            class="btn btn-outline-primary"
+                            onclick="document.getElementById('uploadedFile').click();">
+                        <i class="fas fa-file-upload me-2"></i>
+                        Choose TXT File
+                    </button>
+
+                    <span id="selectedFileName" class="text-muted small">
+                        No file selected
+                    </span>
+                </div>
+
+                <small class="text-muted d-block mt-2">
+                    Only TXT files are supported. You can convert PDF/Word notes to TXT before uploading.
+                </small>
+            </div>
+
+                    <div class="alert alert-info border-0 shadow-sm" style="border-radius:14px; line-height:1.8;">
+
+                        <div class="d-flex align-items-start">
+
+                            <div class="me-3" style="font-size:24px;">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+
+                            <div>
+
+                                <h6 class="fw-bold mb-2">
+                                    TXT Notes Upload Support
+                                </h6>
+
+                                <p class="mb-2">
+                                    You can either paste notes below OR upload a TXT file.
+                                    If both are provided, the uploaded TXT file will be used.
+                                </p>
+
+                                <p class="mb-2">
+                                    To keep uploads lightweight and AI-friendly, the system currently supports
+                                    <strong>.TXT</strong> notes files only.
+                                </p>
+
+                                <p class="mb-0">
+                                    Need to convert your PDF, Word document, or PowerPoint into TXT?
+                                    Use this free converter:
+                                </p>
+
+                                <a href="https://cloudconvert.com/to-txt"
+                                   target="_blank"
+                                   class="btn btn-sm btn-primary mt-3">
+
+                                    <i class="fas fa-external-link-alt me-2"></i>
+                                    Open TXT Converter
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Content, new { @class = "form-label fw-semibold" })
+                        @Html.TextAreaFor(m => m.Content, new { @class = "form-control", rows = 8, placeholder = "Write your notes here. The system will detect keywords and suggest related topics and materials." })
+                        @Html.ValidationMessageFor(m => m.Content, "", new { @class = "text-danger small" })
+                        <small class="text-muted">Tip: Write detailed notes with subject-specific terms for better keyword detection.</small>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Note
+                        </button>
+                        <a href="@Url.Action("Index", "Notes")" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('uploadedFile').addEventListener('change', function () {
+        var fileName = this.files && this.files.length > 0
+            ? this.files[0].name
+            : 'No file selected';
+
+        document.getElementById('selectedFileName').innerText = fileName;
+    });
+</script>

@@ -1,0 +1,108 @@
+﻿@model List<ThinkBridge.Models.Quiz>
+@{
+    ViewBag.Title = "AI Quizzes";
+    var subjects = ViewBag.Subjects as List<ThinkBridge.Models.Subject>;
+    var topics = ViewBag.Topics as List<ThinkBridge.Models.Topic>;
+    var selectedSubjectId = ViewBag.SelectedSubjectId as int?;
+    var selectedTopicId = ViewBag.SelectedTopicId as int?;
+    var role = Session["Role"] != null ? Session["Role"].ToString() : "";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4><i class="fas fa-brain me-2"></i>AI Quizzes</h4>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" action="@Url.Action("Index", "Quizzes")" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Subject</label>
+                <select name="subjectId" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Subjects</option>
+                    @if (subjects != null)
+                    {
+                        foreach (var subject in subjects)
+                        {
+                            <option value="@subject.Id" @(selectedSubjectId == subject.Id ? "selected" : "")>
+                                @subject.Name
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Topic</label>
+                <select name="topicId" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Topics</option>
+                    @if (topics != null)
+                    {
+                        foreach (var topic in topics)
+                        {
+                            <option value="@topic.Id" @(selectedTopicId == topic.Id ? "selected" : "")>
+                                @topic.Name
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <a href="@Url.Action("Index", "Quizzes")" class="btn btn-outline-secondary w-100">Clear Filters</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        @foreach (var quiz in Model)
+        {
+            var subjectName = quiz.Subject != null ? quiz.Subject.Name : "No Subject";
+            var topicName = quiz.Topic != null ? quiz.Topic.Name : "No Topic";
+
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title mb-0">@quiz.Title</h6>
+
+                            <span class="badge bg-primary">
+                                @(quiz.Questions != null ? quiz.Questions.Count : 0) Questions
+                            </span>
+                        </div>
+
+                        <p class="card-text text-muted small mb-3">@quiz.Description</p>
+
+                        <div class="mb-3">
+                            <span class="badge bg-secondary me-1">@subjectName</span>
+                            <span class="badge bg-light text-dark">@topicName</span>
+                        </div>
+
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a href="@Url.Action("Details", "Quizzes", new { id = quiz.Id })" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+
+                            @if (role == "Student" || role == "Lecturer")
+                            {
+                                <a href="@Url.Action("Take", "Quizzes", new { id = quiz.Id })" class="btn btn-sm btn-success">
+                                    <i class="fas fa-play me-1"></i>Take Quiz
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5 text-muted">
+        <i class="fas fa-question-circle fa-3x mb-3"></i>
+        <h5>No quizzes found</h5>
+        <p>Upload or paste notes under a subject to generate practice quizzes.</p>
+    </div>
+}

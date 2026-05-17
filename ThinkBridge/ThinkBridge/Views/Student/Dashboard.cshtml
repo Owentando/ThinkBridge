@@ -1,0 +1,194 @@
+﻿@{
+    ViewBag.Title = "Student Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-gradient">Welcome, @Session["DisplayName"]!</h2>
+            <p class="text-muted">
+                Your AI-powered learning workspace. Add your notes, generate summaries, practice quizzes, and track weak areas.
+            </p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-sticky-note fa-3x text-primary mb-3"></i>
+                    <h5>My Notes</h5>
+                    <p class="text-muted small">Paste or write notes from class.</p>
+                    <a href="@Url.Action("Index", "Notes")" class="btn btn-primary btn-sm">Open Notes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-file-alt fa-3x text-success mb-3"></i>
+                    <h5>AI Summary</h5>
+                    <p class="text-muted small">Summarize notes into simple study content.</p>
+                    <a href="@Url.Action("Index", "AiSummary")" class="btn btn-success btn-sm">Summarize</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-brain fa-3x text-warning mb-3"></i>
+                    <h5>AI Quizzes</h5>
+                    <p class="text-muted small">Practice with quizzes generated from study content.</p>
+                    <a href="@Url.Action("Index", "Quizzes")" class="btn btn-warning btn-sm">Practice</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+                    <h5>My Progress</h5>
+                    <p class="text-muted small">See scores, activity logs, and weak areas.</p>
+                    <a href="@Url.Action("Index", "Progress")" class="btn btn-info btn-sm">View Progress</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-robot fa-3x text-danger mb-3"></i>
+                    <h5>AI Tutor</h5>
+                    <p class="text-muted small">Ask questions when you are stuck.</p>
+                    <a href="@Url.Action("Index", "AiTutor")" class="btn btn-danger btn-sm">Ask AI</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-link fa-3x text-secondary mb-3"></i>
+                    <h5>Resources</h5>
+                    <p class="text-muted small">Save useful study links and materials.</p>
+                    <a href="@Url.Action("Index", "CourseMaterials")" class="btn btn-secondary btn-sm">Open Resources</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-video fa-3x text-primary mb-3"></i>
+                    <h5>Video Links</h5>
+                    <p class="text-muted small">Store recommended lesson videos.</p>
+                    <a href="@Url.Action("Index", "VideoLessons")" class="btn btn-primary btn-sm">Watch Videos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-alt fa-3x text-success mb-3"></i>
+                    <h5>Study Plan</h5>
+                    <p class="text-muted small">Generate a study plan based on goals and weak areas.</p>
+                    <a href="@Url.Action("Index", "StudyPlanner")" class="btn btn-success btn-sm">Plan Study</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h5 class="mb-3">
+                <i class="fas fa-circle-info text-primary me-2"></i>How ThinkBridge Works
+            </h5>
+
+            <div class="row g-3">
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <span class="badge bg-primary">STEP 1</span>
+                            </div>
+
+                            <h6 class="fw-bold">
+                                <i class="fas fa-layer-group me-2 text-primary"></i>
+                                Create Subject
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                The lecturer or student first creates a subject module which becomes the main learning workspace for notes, quizzes, AI summaries, and resources.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <span class="badge bg-success">STEP 2</span>
+                            </div>
+
+                            <h6 class="fw-bold">
+                                <i class="fas fa-book-open me-2 text-success"></i>
+                                Upload Notes & Content
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Students upload learning notes, PDFs, videos, and study material into each subject so the AI can analyze and understand the learning content.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <span class="badge bg-danger">STEP 3</span>
+                            </div>
+
+                            <h6 class="fw-bold">
+                                <i class="fas fa-robot me-2 text-danger"></i>
+                                AI Processing & Practice
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                The AI generates summaries, quizzes, study plans, explanations, learning resources, and personalized recommendations based on uploaded content.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <span class="badge bg-warning text-dark">STEP 4</span>
+                            </div>
+
+                            <h6 class="fw-bold">
+                                <i class="fas fa-chart-line me-2 text-warning"></i>
+                                Track Progress & Collaborate
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Students monitor weak topics, quiz performance, completed lessons, and can join live study rooms and collaborative revision sessions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

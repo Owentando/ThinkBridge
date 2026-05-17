@@ -1,0 +1,75 @@
+﻿@model List<ThinkBridge.Models.AiSummary>
+@{
+    ViewBag.Title = "AI Summaries";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4><i class="fas fa-compress-alt me-2"></i>AI Summaries</h4>
+    <a href="@Url.Action("Create", "AiSummary")" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>New Summary
+    </a>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var summary in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100 summary-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title mb-0">@summary.Title</h6>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-link text-muted" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="@Url.Action("Details", "AiSummary", new { id = summary.Id })"><i class="fas fa-eye me-2"></i>View</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        @using (Html.BeginForm("Delete", "AiSummary", new { id = summary.Id }, FormMethod.Post, new { style = "display:inline", onsubmit = "return confirm('Delete this summary?');" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item text-danger"><i class="fas fa-trash me-2"></i>Delete</button>
+                                        }
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                            @summary.SummaryText
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>@summary.CreatedAt.ToString("MMM dd, yyyy")
+                            </small>
+                            <span class="badge bg-info bg-opacity-10 text-info">AI Generated</span>
+                            <a href="@Url.Action("Details", "AiSummary", new { id = summary.Id })"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i>Read Summary
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5 text-muted">
+        <i class="fas fa-compress-alt fa-3x mb-3"></i>
+        <h5>No summaries yet</h5>
+        <p>Paste text from your course materials and let AI create a concise summary.</p>
+        <a href="@Url.Action("Create", "AiSummary")" class="btn btn-primary mt-2">
+            <i class="fas fa-plus me-2"></i>Create Summary
+        </a>
+    </div>
+}
+
+<style>
+    .summary-card {
+        border-left: 4px solid #4f46e5;
+    }
+</style>

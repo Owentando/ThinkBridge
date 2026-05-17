@@ -1,0 +1,132 @@
+﻿@model List<ThinkBridge.Models.OfflineSavedItem>
+@{
+    ViewBag.Title = "Offline Study";
+    var materials = ViewBag.Materials as List<ThinkBridge.Models.CourseMaterial>;
+    var videos = ViewBag.Videos as List<ThinkBridge.Models.VideoLesson>;
+    var notes = ViewBag.Notes as List<ThinkBridge.Models.PersonalNote>;
+    var totalItems = (int)ViewBag.TotalItems;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4><i class="fas fa-book-open me-2"></i>Offline Study Mode</h4>
+    <div class="d-flex align-items-center gap-2">
+        <span class="offline-badge">
+            <i class="fas fa-wifi-slash me-1"></i>Offline
+        </span>
+        <span class="badge bg-primary">@totalItems items</span>
+    </div>
+</div>
+
+@if (totalItems > 0)
+{
+    <div class="alert alert-info mb-4">
+        <i class="fas fa-info-circle me-2"></i>
+        This is your offline study collection. All saved items are organized below for easy access.
+    </div>
+
+    if (materials != null && materials.Any())
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0"><i class="fas fa-file-alt me-2 text-primary"></i>Course Materials (@materials.Count)</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    @foreach (var material in materials)
+                    {
+                        <div class="list-group-item p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">@material.Title</h6>
+                                    <small class="text-muted">@material.Description</small>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-primary">@material.FileType</span>
+                                    <a href="@Url.Action("Download", "CourseMaterials", new { id = material.Id })" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    if (videos != null && videos.Any())
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0"><i class="fas fa-video me-2 text-danger"></i>Video Lessons (@videos.Count)</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    @foreach (var video in videos)
+                    {
+                        <div class="list-group-item p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">@video.Title</h6>
+                                    <small class="text-muted">@video.Description</small>
+                                </div>
+                                <a href="@Url.Action("Watch", "VideoLessons", new { id = video.Id })" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-play me-1"></i>Watch
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    if (notes != null && notes.Any())
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0"><i class="fas fa-sticky-note me-2 text-warning"></i>Personal Notes (@notes.Count)</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    @foreach (var note in notes)
+                    {
+                        <div class="list-group-item p-3">
+                            <h6 class="mb-1">@note.Title</h6>
+                            <p class="mb-0 text-muted small" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                @note.Content
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5 text-muted">
+            <i class="fas fa-wifi-slash fa-3x mb-3"></i>
+            <h5>Your offline collection is empty</h5>
+            <p>Save items from materials, videos, and notes to study offline.</p>
+            <a href="@Url.Action("Index", "Offline")" class="btn btn-primary mt-2">
+                <i class="fas fa-plus me-2"></i>Manage Collection
+            </a>
+        </div>
+    </div>
+}
+
+<style>
+    .offline-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        background: #1e293b;
+        color: white;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+</style>

@@ -1,0 +1,142 @@
+﻿@model ThinkBridge.Models.StudyPlan
+@using Markdig
+
+@{
+    ViewBag.Title = "Study Plan - " + Model.Subject.Name;
+    var subject = ViewBag.Subject as ThinkBridge.Models.Subject;
+    var daysUntilTest = (Model.TestDate - DateTime.Now).Days;
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "StudyPlanner")">Study Plans</a></li>
+            <li class="breadcrumb-item active">@Model.Subject.Name</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm bg-primary bg-opacity-10 border-primary">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <h4 class="mb-1">@Model.Subject.Name</h4>
+                        <p class="text-muted mb-0">@Model.Topics</p>
+                    </div>
+
+                    <div class="col-md-3 text-center">
+                        <span class="display-6 fw-bold text-primary">@Model.DesiredMark%</span><br />
+                        <small class="text-muted">Target Score</small>
+                    </div>
+
+                    <div class="col-md-3 text-center">
+                        <span class="display-6 fw-bold @(daysUntilTest <= 3 ? "text-danger" : "text-success")">
+                            @(daysUntilTest <= 0 ? "Today!" : daysUntilTest.ToString())
+                        </span><br />
+                        <small class="text-muted">@(daysUntilTest <= 0 ? "" : "Days Until Test")</small>
+                    </div>
+
+                    <div class="col-md-2 text-end">
+                        <span class="badge bg-primary">Test: @Model.TestDate.ToString("MMM dd")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .study-plan-content {
+        line-height: 1.8;
+        font-size: 0.98rem;
+    }
+
+        .study-plan-content h1,
+        .study-plan-content h2,
+        .study-plan-content h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .study-plan-content h1 {
+            font-size: 1.6rem;
+        }
+
+        .study-plan-content h2 {
+            font-size: 1.35rem;
+            color: #0d6efd;
+        }
+
+        .study-plan-content h3 {
+            font-size: 1.15rem;
+        }
+
+        .study-plan-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .study-plan-content th,
+        .study-plan-content td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            vertical-align: top;
+        }
+
+        .study-plan-content th {
+            background: #f8f9fa;
+            font-weight: 700;
+        }
+
+        .study-plan-content ul,
+        .study-plan-content ol {
+            padding-left: 1.4rem;
+        }
+
+        .study-plan-content hr {
+            margin: 1.5rem 0;
+        }
+
+        .study-plan-content strong {
+            font-weight: 700;
+        }
+</style>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h6 class="mb-0">
+            <i class="fas fa-robot me-2"></i>AI Generated Study Plan
+        </h6>
+    </div>
+
+    <div class="card-body">
+        <div class="study-plan-content">
+            @Html.Raw(Markdown.ToHtml(Model.PlanContent ?? ""))
+        </div>
+    </div>
+
+    <div class="card-footer bg-light">
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+                <i class="fas fa-calendar me-1"></i>
+                Generated: @Model.CreatedAt.ToString("g")
+            </small>
+
+            <div class="d-flex gap-2">
+                <a href="@Url.Action("Index", "StudyPlanner")" class="btn btn-sm btn-outline-primary">
+                    Back to Plans
+                </a>
+
+                @using (Html.BeginForm("Delete", "StudyPlanner", new { id = Model.Id }, FormMethod.Post, new { style = "display:inline", onsubmit = "return confirm('Delete this plan?');" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

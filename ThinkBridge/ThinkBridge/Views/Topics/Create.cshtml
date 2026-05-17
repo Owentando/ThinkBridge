@@ -1,0 +1,43 @@
+﻿@model ThinkBridge.Models.Topic
+@{
+    ViewBag.Title = "Create Topic";
+    var subjectName = ViewBag.SubjectName as string;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-plus me-2"></i>Add Topic to @subjectName</h5>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("Create", "Topics", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                    @Html.HiddenFor(m => m.SubjectId)
+
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Name, new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Enter topic name" })
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Description, new { @class = "form-label fw-semibold" })
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 4, placeholder = "Enter topic description" })
+                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Create Topic
+                        </button>
+                        <a href="@Url.Action("Details", "Subjects", new { id = Model.SubjectId })" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+ 
+# Build output
+bin/
+obj/
+
+# NuGet packages
+packages/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.cache
+
+# Database files
+*.mdf
+*.ldf
+
+# Publish profiles
+*.pubxml.user
+
+# OS files
+.DS_Store
+Thumbs.db
+# Contains API keys - never commit
+ThinkBridge/ThinkBridge/Web.config
+secrets.txt

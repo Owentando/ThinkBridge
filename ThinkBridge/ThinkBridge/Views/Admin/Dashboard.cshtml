@@ -1,0 +1,140 @@
+﻿@model ThinkBridge.ViewModels.AdminDashboardViewModel
+@{
+    ViewBag.Title = "Admin Dashboard";
+}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-white p-4 rounded-3 shadow-sm d-flex align-items-center gap-3">
+            <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3">
+                <i class="fas fa-users fa-2x"></i>
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold">@Model.TotalUsers</h3>
+                <small class="text-muted">Total Users</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-white p-4 rounded-3 shadow-sm d-flex align-items-center gap-3">
+            <div class="bg-success bg-opacity-10 text-success rounded-3 p-3">
+                <i class="fas fa-user-graduate fa-2x"></i>
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold">@Model.TotalStudents</h3>
+                <small class="text-muted">Students</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-white p-4 rounded-3 shadow-sm d-flex align-items-center gap-3">
+            <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-3">
+                <i class="fas fa-chalkboard-teacher fa-2x"></i>
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold">@Model.TotalLecturers</h3>
+                <small class="text-muted">Lecturers</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-white p-4 rounded-3 shadow-sm d-flex align-items-center gap-3">
+            <div class="bg-info bg-opacity-10 text-info rounded-3 p-3">
+                <i class="fas fa-book fa-2x"></i>
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold">@Model.AllSubjects.Count</h3>
+                <small class="text-muted">Subjects</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i>Recent Users</h5>
+                <a href="@Url.Action("Users", "Admin")" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.RecentUsers.Any())
+                {
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.RecentUsers)
+                            {
+                                <tr>
+                                    <td><strong>@user.FullName</strong></td>
+                                    <td>@user.Username</td>
+                                    <td>
+                                        <span class="badge @(user.Role == "Admin" ? "bg-warning text-dark" : user.Role == "Lecturer" ? "bg-info" : "bg-success")">
+                                            @user.Role
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @(user.IsActive ? "bg-success" : "bg-danger")">
+                                            @(user.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+                                    <td class="text-muted">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-users-slash fa-3x mb-3"></i>
+                        <h5>No users found</h5>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>System Activity</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.RecentActivity.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var activity in Model.RecentActivity.Take(10))
+                        {
+                            <div class="list-group-item px-0 py-2 border-0 border-bottom">
+                                <small class="text-muted">@activity.CompletedAt.ToString("g")</small>
+                                <div class="mt-1">
+                                    <span class="badge @(activity.ActivityType == "Quiz" ? "bg-warning" : "bg-info")">@activity.ActivityType</span>
+                                    <span>@activity.ActivityName</span>
+                                    @if (activity.Score.HasValue)
+                                    {
+                                        <span class="badge @(activity.Score >= 70 ? "bg-success" : "bg-danger")">@activity.Score%</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-chart-line fa-2x mb-2"></i>
+                        <p class="mb-0">No activity yet</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

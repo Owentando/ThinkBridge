@@ -1,0 +1,75 @@
+﻿@model List<ThinkBridge.Models.StudyPlan>
+@{
+    ViewBag.Title = "Study Planner";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4><i class="fas fa-calendar-alt me-2"></i>Study Planner</h4>
+    <a href="@Url.Action("Create", "StudyPlanner")" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Create Plan
+    </a>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var plan in Model)
+        {
+            var daysUntilTest = (plan.TestDate - DateTime.Now).Days;
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title mb-0">@plan.Subject.Name</h6>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-link text-muted" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="@Url.Action("Details", "StudyPlanner", new { id = plan.Id })"><i class="fas fa-eye me-2"></i>View Plan</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        @using (Html.BeginForm("Delete", "StudyPlanner", new { id = plan.Id }, FormMethod.Post, new { style = "display:inline", onsubmit = "return confirm('Delete this study plan?');" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item text-danger"><i class="fas fa-trash me-2"></i>Delete</button>
+                                        }
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-2">@plan.Topics</p>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Target</small>
+                                <small class="fw-bold">@plan.DesiredMark%</small>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" style="width: @plan.DesiredMark%"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>Test: @plan.TestDate.ToString("MMM dd, yyyy")
+                            </small>
+                            <span class="badge @(daysUntilTest <= 3 ? "bg-danger" : daysUntilTest <= 7 ? "bg-warning" : "bg-info")">
+                                @(daysUntilTest <= 0 ? "Today!" : daysUntilTest + " days")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5 text-muted">
+        <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+        <h5>No study plans yet</h5>
+        <p>Create a personalized AI-generated study plan for your upcoming tests.</p>
+        <a href="@Url.Action("Create", "StudyPlanner")" class="btn btn-primary mt-2">
+            <i class="fas fa-plus me-2"></i>Create First Plan
+        </a>
+    </div>
+}

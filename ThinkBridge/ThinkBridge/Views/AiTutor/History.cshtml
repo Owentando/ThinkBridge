@@ -1,0 +1,51 @@
+﻿@model List<ThinkBridge.ViewModels.AiTutorMessageViewModel>
+@{
+    ViewBag.Title = "Chat History";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4><i class="fas fa-history me-2"></i>Chat History</h4>
+    <a href="@Url.Action("Index", "AiTutor")" class="btn btn-primary">
+        <i class="fas fa-comments me-2"></i>New Chat
+    </a>
+</div>
+
+@if (Model.Any())
+{
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                @foreach (var msg in Model)
+                {
+                    <div class="list-group-item p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="badge bg-primary me-2">@msg.SubjectName</span>
+                                <small class="text-muted">@msg.CreatedAt.ToString("g")</small>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-primary"><i class="fas fa-user me-2"></i>You:</strong>
+                            <p class="mb-0">@msg.Message</p>
+                        </div>
+                        <div>
+                            <strong class="text-success"><i class="fas fa-robot me-2"></i>AI:</strong>
+                            <p class="mb-0 text-muted">@Html.Raw(msg.Response.Replace("\n", "<br>"))</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center py-5 text-muted">
+        <i class="fas fa-history fa-3x mb-3"></i>
+        <h5>No chat history</h5>
+        <p>Start chatting with the AI Tutor to see your conversations here.</p>
+        <a href="@Url.Action("Index", "AiTutor")" class="btn btn-primary mt-2">
+            <i class="fas fa-comments me-2"></i>Start Chatting
+        </a>
+    </div>
+}

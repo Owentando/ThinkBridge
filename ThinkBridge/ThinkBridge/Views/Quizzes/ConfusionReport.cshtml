@@ -1,0 +1,105 @@
+﻿@model ThinkBridge.ViewModels.ConfusionReportViewModel
+@{
+    ViewBag.Title = "Confusion Report - " + Model.QuizTitle;
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Quizzes")">Quizzes</a></li>
+            <li class="breadcrumb-item active">Confusion Report</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm bg-danger bg-opacity-10 border-danger">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="fas fa-brain fa-3x text-danger"></i>
+                    <div>
+                        <h4 class="mb-1">Confusion Detected!</h4>
+                        <p class="mb-0 text-muted">We identified areas where you need more practice in <strong>@Model.QuizTitle</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.WeakAreas.Any())
+{
+    <h5 class="mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Weak Areas</h5>
+    <div class="row mb-4">
+        @foreach (var area in Model.WeakAreas)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card shadow-sm confusion-card @(area.Status == "Critical" ? "critical" : "warning")">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title mb-0">@area.TopicName</h6>
+                            <span class="badge @(area.Status == "Critical" ? "bg-danger" : "bg-warning")">@area.Status</span>
+                        </div>
+                        <div class="weakness-indicator mb-2">
+                            <span class="percentage @(area.Status == "Critical" ? "text-danger" : "text-warning")">@area.WrongAnswers</span>
+                            <span class="text-muted">wrong out of @area.TotalQuestions</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 10px;">
+                            <div class="progress-bar @(area.Status == "Critical" ? "bg-danger" : "bg-warning")" style="width: @area.WeaknessPercentage%"></div>
+                        </div>
+                        <small class="text-muted">@area.WeaknessPercentage.ToString("F1")% weakness detected</small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (Model.Suggestions.Any())
+{
+    <h5 class="mb-3"><i class="fas fa-lightbulb me-2"></i>Recommended Actions</h5>
+    <div class="row">
+        @foreach (var suggestion in Model.Suggestions)
+        {
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas @(suggestion.Type == "Note" ? "fa-file-alt text-warning" : suggestion.Type == "Video" ? "fa-video text-danger" : suggestion.Type == "Quiz" ? "fa-question-circle text-success" : "fa-robot text-primary") fa-2x"></i>
+                        </div>
+                        <h6 class="card-title">@suggestion.Title</h6>
+                        <p class="card-text text-muted small">@suggestion.Description</p>
+                        <a href="@suggestion.Link" class="btn btn-sm btn-outline-primary">Go</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="text-center mt-4 mb-4">
+    <a href="@Url.Action("Index", "Quizzes")" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Quizzes
+    </a>
+</div>
+
+<style>
+    .confusion-card {
+        border-left: 4px solid;
+    }
+
+        .confusion-card.critical {
+            border-left-color: #dc3545;
+        }
+
+        .confusion-card.warning {
+            border-left-color: #ffc107;
+        }
+
+    .weakness-indicator .percentage {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-right: 5px;
+    }
+</style>
