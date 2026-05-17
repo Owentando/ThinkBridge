@@ -9,8 +9,8 @@ namespace ThinkBridge.Services
 {
     public class WebResourceSearchService
     {
-        private readonly string _apiKey = System.Configuration.ConfigurationManager.AppSettings["GoogleSearchApiKey"];
-        private readonly string _cx =  System.Configuration.ConfigurationManager.AppSettings["GoogleSearchCx"];
+        private readonly string _apiKey = ""; // TODO: add Google Search API key
+        private readonly string _cx = "";     // TODO: add Google Search CX
         public async Task<List<WebResourceResult>> SearchAsync(string subject, string topic)
         {
             var results = new List<WebResourceResult>();

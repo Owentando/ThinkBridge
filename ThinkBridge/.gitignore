@@ -1,0 +1,23 @@
+# Build output
+bin/
+obj/
+
+# NuGet packages (can be restored)
+packages/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.cache
+
+# Database files (sensitive)
+*.mdf
+*.ldf
+
+# Publish profiles (contain server credentials)
+*.pubxml.user
+
+# OS files
+.DS_Store
+Thumbs.db
